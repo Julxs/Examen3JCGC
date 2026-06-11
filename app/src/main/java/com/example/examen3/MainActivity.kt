@@ -1,45 +1,48 @@
-package com.example.examen3
+package tu.paquete
 
+import android.R
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var etUsername: EditText
-    private lateinit var etPassword: EditText
-    private lateinit var btnIniciarSesion: Button
-    private lateinit var btnRegistrar: Button
-    private lateinit var dbHelper: DatabaseHelper
+    private var etUsername: EditText? = null
+    private var etPassword: EditText? = null
+    private var btnIniciarSesion: Button? = null
+    private var btnRegistrar: Button? = null
+    private var dbHelper: DatabaseHelper? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_)
 
-        etUsername = findViewById(R.id.etUsername)
-        etPassword = findViewById(R.id.etPassword)
-        btnIniciarSesion = findViewById(R.id.btnIniciarSesion)
-        btnRegistrar = findViewById(R.id.btnRegistrar)
+        etUsername = findViewById<EditText?>(R.id.etUsername)
+        etPassword = findViewById<EditText?>(R.id.etPassword)
+        btnIniciarSesion = findViewById<Button?>(R.id.btnIniciarSesion)
+        btnRegistrar = findViewById<Button?>(R.id.btnRegistrar)
         dbHelper = DatabaseHelper(this)
 
-        btnIniciarSesion.setOnClickListener {
-            val username = etUsername.text.toString().trim()
-            val password = etPassword.text.toString().trim()
-
-            if (dbHelper.validarCredenciales(username, password)) {
-                val intent = Intent(this, ProfileActivity::class.java)
+        btnIniciarSesion!!.setOnClickListener(View.OnClickListener { v: View? ->
+            val username = etUsername!!.getText().toString().trim { it <= ' ' }
+            val password = etPassword!!.getText().toString().trim { it <= ' ' }
+            if (dbHelper!!.validarCredenciales(username, password)) {
+                val intent = Intent(this@MainActivity, ProfileActivity::class.java)
                 intent.putExtra("USERNAME", username)
                 startActivity(intent)
             } else {
                 Toast.makeText(this, "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
             }
-        }
+        })
 
-        btnRegistrar.setOnClickListener {
-            startActivity(Intent(this, SignUpActivity::class.java))
-        }
-    }
-}
+        btnRegistrar!!.setOnClickListener(View.OnClickListener { v: View? ->
+            val username = etUsername!!.getText().toString().trim { it <= ' ' }
+            if (!username.isEmpty() && dbHelper!!.existeUsuario(username)) {
+                Toast.makeText(this, "Ya está registrado", Toast.LENGTH_SHORT).show()
+            } else {
+                startActivity(Intent(this@MainActivity, SignUpActivity::class.java))
+            }
+        })
